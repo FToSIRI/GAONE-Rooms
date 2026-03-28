@@ -1,0 +1,15 @@
+{
+  email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+  encode zstd gzip
+
+  @rtc path /rtc/v1/*
+  reverse_proxy @rtc srs:1985
+
+  @block path /api/v1* /api/v1/*
+  respond @block 403
+
+  reverse_proxy app:3000
+}

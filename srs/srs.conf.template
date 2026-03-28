@@ -1,0 +1,49 @@
+listen              1935;
+max_connections     1000;
+daemon              off;
+
+srs_log_tank        console;
+
+http_api {
+  enabled           on;
+  listen            1985;
+  crossdomain       on;
+}
+
+http_server {
+  enabled           on;
+  listen            8080;
+  dir               ./objs/nginx/html;
+}
+
+rtc_server {
+  enabled           on;
+  listen            8000;
+  candidate         {{RTC_CANDIDATE}};
+}
+
+vhost __defaultVhost__ {
+  tcp_nodelay       on;
+  min_latency       on;
+
+  play {
+    gop_cache       off;
+    queue_length    10;
+  }
+
+  publish {
+    mr              off;
+  }
+
+  rtc {
+    enabled         on;
+    rtmp_to_rtc     on;
+    rtc_to_rtmp     off;
+  }
+
+  http_hooks {
+    enabled         on;
+    on_publish      {{HOOKS_URL}}/on_publish;
+    on_unpublish    {{HOOKS_URL}}/on_unpublish;
+  }
+}
